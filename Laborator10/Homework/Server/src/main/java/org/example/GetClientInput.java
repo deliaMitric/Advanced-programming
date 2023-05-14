@@ -45,7 +45,7 @@ public class GetClientInput extends Thread {
                     System.out.println("Server received the request: " + response);
                 }
 
-                if (response.equalsIgnoreCase("exit")){
+                if (response.equalsIgnoreCase("stop")){
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     out.println("Server stopped");
                     out.close();

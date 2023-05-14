@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ClientThread extends Thread {
     private Socket clientSocket;
-    private GetClientInput getClientInput;
+    private final GetClientInput getClientInput;
     private PrintWriter out;
     private BufferedReader keyboardInput;
     private GameServer gameServer;
@@ -21,7 +21,6 @@ public class ClientThread extends Thread {
 
         //create a thread to listen to the port
         this.getClientInput = new GetClientInput(clientSocket, this.gameServer);
-        getClientInput.start();
 
         try {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -30,15 +29,14 @@ public class ClientThread extends Thread {
         } catch (IOException e) {
             System.err.println("Error setting up client thread: " + e.getMessage());
         }
-
-        System.out.println("New thread created");
     }
 
     @Override
     public void run() {
         try {
-            String inputLine;
             running = true;
+
+            getClientInput.start();
 
             while (running) {
                 //read the user input

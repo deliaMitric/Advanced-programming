@@ -25,7 +25,6 @@ public class GameClient {
 
             //create a thread to listen to the server socket
             this.getServerInput = new GetServerInput(socket);
-            getServerInput.start();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -34,6 +33,8 @@ public class GameClient {
 
     public void start() {
         this.running = true;
+
+        getServerInput.start();
 
         try {
             while (running) {
@@ -46,7 +47,7 @@ public class GameClient {
                 while ((userInput = keyboardInput.readLine()) != null) {
                     out.println(userInput);//transmitem mesajul serverului
 
-                    if (userInput.equalsIgnoreCase("exit")) {
+                    if (userInput.equalsIgnoreCase("stop")) {
                         running = false;
                         getServerInput.setRunning(false);
                         break;

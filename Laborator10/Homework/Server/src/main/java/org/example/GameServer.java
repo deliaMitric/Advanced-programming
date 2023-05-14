@@ -40,14 +40,19 @@ public class GameServer {
                 clientThread.start();
 
             } catch (IOException e) {
-                System.err.println("Error accepting client connection.");
-                e.printStackTrace();
+                if(!running)
+                    break;
+                else {
+                    System.err.println("Error accepting client connection.");
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public void stop() {
         running = false;
+
         try {
             for (ClientThread clientThread : clients) {
                 clientThread.stopClient();
