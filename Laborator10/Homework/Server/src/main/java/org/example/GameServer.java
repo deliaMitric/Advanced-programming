@@ -1,9 +1,6 @@
 package org.example;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,17 +9,17 @@ import java.util.List;
 public class GameServer {
     private ServerSocket serverSocket;
     private boolean running;
-    private int port;
-    private BufferedReader keyboardInput;
+    private final int port;
+    //private BufferedReader keyboardInput;
     private List<ClientThread> clients = new ArrayList<>();
 
     public GameServer(int port) {
-        try {
-            this.port = port;
-            serverSocket = new ServerSocket(port);
-            keyboardInput = new BufferedReader(new InputStreamReader(System.in));
+        this.port = port;
 
+        try {
+            serverSocket = new ServerSocket(port);
             System.out.println("Game server started on port " + port);
+
         } catch (IOException e) {
             System.err.println("Error: Could not start the server on port " + port);
             e.printStackTrace();
@@ -31,6 +28,7 @@ public class GameServer {
 
     public void start() {
         running = true;
+
         while (running) {
             try {
                 Socket clientSocket = serverSocket.accept();
@@ -41,37 +39,23 @@ public class GameServer {
                 clients.add(clientThread);
                 clientThread.start();
 
-                String inputKeyboard;
-                PrintWriter clientOut = new PrintWriter(clientSocket.getOutputStream(), true);
-
-                while ((inputKeyboard = keyboardInput.readLine()) != null && running) {
-                    clientOut.println(inputKeyboard);//transmit mesajul clientului
-                    if (inputKeyboard.equalsIgnoreCase("stop")) {
-                        running = false;
-                        break;
-                    }
-                }
-
-                if (inputKeyboard != null && inputKeyboard.equalsIgnoreCase("stop")) {
-                    running = false;
-                }
             } catch (IOException e) {
                 System.err.println("Error accepting client connection.");
                 e.printStackTrace();
             }
         }
-
     }
-
 
     public void stop() {
         running = false;
         try {
             for (ClientThread clientThread : clients) {
-                clientThread.setRunning(false);
+                clientThread.stopClient();
             }
+
             serverSocket.close();
             System.out.println("Game server stopped.");
+
         } catch (IOException e) {
             System.err.println("Error stopping the server.");
             e.printStackTrace();
@@ -96,18 +80,6 @@ public class GameServer {
 
     public int getPort() {
         return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public BufferedReader getKeyboardInput() {
-        return keyboardInput;
-    }
-
-    public void setKeyboardInput(BufferedReader keyboardInput) {
-        this.keyboardInput = keyboardInput;
     }
 
     public List<ClientThread> getClients() {

@@ -7,43 +7,52 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class GameClient {
-    private String serverAddress;
-    private int serverPort;
-    private boolean running = false;
+    private final String serverAddress;
+    private final int serverPort;
+    private boolean running;
+    private final PrintWriter out;
+    private final Socket socket;
+    private final GetServerInput getServerInput;
 
     public GameClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
+        this.running = false;
+
+        try {
+            this.socket = new Socket(serverAddress, serverPort);
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+
+            //create a thread to listen to the server socket
+            this.getServerInput = new GetServerInput(socket);
+            getServerInput.start();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void start() {
+        this.running = true;
+
         try {
-            running = true;
             while (running) {
                 //conectare la server
-                Socket socket = new Socket(serverAddress, serverPort);
                 System.out.println("Connected to server: " + serverAddress + ":" + serverPort);
 
-                //
                 BufferedReader keyboardInput = new BufferedReader(new InputStreamReader(System.in));
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
                 String userInput;
 
-                //citim mesajele de la server
                 while ((userInput = keyboardInput.readLine()) != null) {
                     out.println(userInput);//transmitem mesajul serverului
 
                     if (userInput.equalsIgnoreCase("exit")) {
-                        //running = false;
+                        running = false;
+                        getServerInput.setRunning(false);
                         break;
                     }
-                    String response;
-                    if ((response = in.readLine()) != null){
-                        System.out.println("Received command from server: " + response);
-                    }
                 }
+
                 keyboardInput.close();
                 out.close();
                 socket.close();
@@ -53,6 +62,4 @@ public class GameClient {
         }
 
     }
-
-
 }
