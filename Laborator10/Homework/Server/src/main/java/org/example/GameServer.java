@@ -103,7 +103,7 @@ public class GameServer {
             waitingMatches.remove(0);
             game.setPlayer2(client);
 
-            game.start();
+            game.run();
         }
     }
 

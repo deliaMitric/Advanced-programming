@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Scanner;
 
-public class Game extends Thread {
+public class Game{
     boolean running;
     private final Board board;
     private final Socket player1;
@@ -35,7 +35,6 @@ public class Game extends Thread {
         }
     }
 
-    @Override
     public void run() {
         this.running = true;
         System.out.println("Game started!");
@@ -48,86 +47,12 @@ public class Game extends Thread {
             this.player1.setSoTimeout(60*1000);
             this.player2.setSoTimeout(60*1000);
 
-
         } catch (SocketException e) {
             System.err.println("Error trying to set the timeout for the socket: " + e.getMessage());
             throw new RuntimeException(e);
 
         } catch (IOException e){
             System.err.println("Error trying to set up a communication chanel: " + e.getMessage());
-        }
-
-        while (running){
-            try {
-                int row = 0;
-                int col = 0;
-                boolean ok = false;
-
-                String response1;
-                while (!ok) {
-                    if ((response1 = in1.readLine()) != null) {
-                        //check if the values are valid
-                        Scanner scanner = new Scanner(response1);
-                        String input = scanner.nextLine();
-                        String[] numbers = input.split(" ");
-
-                        try {
-                            row = Integer.parseInt(numbers[0]);
-                            col = Integer.parseInt(numbers[1]);
-
-                            //check if the cell is empty
-                            if(this.board.isCellEmpty(row, col))
-                                ok = true;
-                            else
-                                throw new NumberFormatException();
-
-                        } catch (NumberFormatException e) {
-                            out1.println("Invalid move");
-                        }
-                    }
-                }
-
-                //make the changes for player1
-                this.board.setCell(row, col, 'X');
-                if(this.board.hasWon('X')){
-                    this.stopGame("player1");
-                }
-
-                String response2;
-                ok = false;
-                while (!ok) {
-                    if ((response2 = in2.readLine()) != null) {
-                        //check if the values are valid
-                        Scanner scanner = new Scanner(response2);
-                        String input = scanner.nextLine();
-                        String[] numbers = input.split(" ");
-
-                        try {
-                            row = Integer.parseInt(numbers[0]);
-                            col = Integer.parseInt(numbers[1]);
-
-                            //check if the cell is empty
-                            if(this.board.isCellEmpty(row, col))
-                                ok = true;
-                            else
-                                throw new NumberFormatException();
-
-                        } catch (NumberFormatException e) {
-                            out2.println("Invalid move");
-                        }
-                    }
-                }
-
-                //make the changes for player2
-                this.board.setCell(row, col, 'O');
-                if(this.board.hasWon('O')){
-                    this.stopGame("player2");
-                }
-
-            } catch (IOException e) {
-                System.err.println("Error trying to communicate with the opponent: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
         }
     }
 
