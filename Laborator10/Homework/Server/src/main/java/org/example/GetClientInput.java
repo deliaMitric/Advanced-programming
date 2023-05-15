@@ -45,6 +45,18 @@ public class GetClientInput extends Thread {
                     System.out.println("Server received the request: " + response);
                 }
 
+                if (response.equalsIgnoreCase("create game")){
+                    gameServer.addMatchOnQueue(this.clientSocket);
+                }
+
+                if (response.equalsIgnoreCase("join game")){
+                    gameServer.startGame(this.clientSocket);
+                }
+
+                if (response.contains("make move")){
+                    gameServer.makeMove(this.clientSocket, response);
+                }
+
                 if (response.equalsIgnoreCase("stop")){
                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     out.println("Server stopped");
