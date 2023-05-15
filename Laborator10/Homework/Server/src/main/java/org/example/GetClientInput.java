@@ -53,6 +53,7 @@ public class GetClientInput extends Thread {
                     System.out.println("Server stopped");
 
                     //stop everything
+                    this.running = false;
                     gameServer.stop();
                 }
 
