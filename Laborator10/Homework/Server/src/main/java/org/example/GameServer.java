@@ -103,6 +103,14 @@ public class GameServer {
             waitingMatches.remove(0);
             game.setPlayer2(client);
 
+            try {
+                PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+                out.println("Game joined successfully!");
+
+            } catch (IOException e) {
+                System.err.println("Error trying to communicate with the client: " + e.getMessage());
+            }
+
             game.run();
         }
     }
@@ -182,51 +190,3 @@ public class GameServer {
         this.waitingClients = clients;
     }
 }
-
-/*import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
-public class GameServer {
-    private int port;
-    private List<ClientThread> clients;
-
-    public GameServer(int port) {
-        this.port = port;
-        this.clients = new ArrayList<>();
-    }
-
-    public void start() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Game server started on port " + port);
-
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
-
-                // Create a new client thread for each connected client
-                ClientThread clientThread = new ClientThread(clientSocket);
-                clients.add(clientThread);
-                clientThread.start();
-            }
-        } catch (IOException e) {
-            System.err.println("Error starting the game server: " + e.getMessage());
-        }
-    }
-
-    public void broadcastMessage(String message) {
-        for (ClientThread client : clients) {
-            client.sendMessage(message);
-        }
-    }
-
-    public static void main(String[] args) {
-        int port = 1234; // Specify the port number for the server
-        GameServer server = new GameServer(port);
-        server.start();
-    }
-}
-*/

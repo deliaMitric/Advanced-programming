@@ -44,9 +44,6 @@ public class Game{
             this.out1 = new PrintWriter(player1.getOutputStream(), true);
             this.out2 = new PrintWriter(player2.getOutputStream(), true);
 
-            this.player1.setSoTimeout(60*1000);
-            this.player2.setSoTimeout(60*1000);
-
         } catch (SocketException e) {
             System.err.println("Error trying to set the timeout for the socket: " + e.getMessage());
             throw new RuntimeException(e);
